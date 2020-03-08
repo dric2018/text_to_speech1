@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <!--css files-->
+        <!--materialize-->
+    <link rel="stylesheet" href="../css/materialize.min.css">
+      <!--sweetalert2-->
+    <link rel="stylesheet" href="../css/sweetalert2.css">
+
+      <!--Import Google Icon Font-->
+    <link href="../css/material-icons.css" rel="stylesheet">
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <script src="../js/jquery.min.js"></script>
+
+        <title>Text2Speach</title>
+
+    </head>
+  
+      <body>
+        
+        <div class="container center">
+            <div class="card" style="margin:1cm; padding:0.9cm;">
+                <div class="card-title" >
+                    <h3 class="blue-text text-darken-4 ">Synthèse de voix par Google chrome & Firefox </h3>
+                </div>
+            </div>
+
+
+            <div class="card" style="margin:1cm; padding:0.9cm">
+                <div class="container">
+                    <div class="input-field col s12">
+                        <select id="sl">
+                          <option value="" disabled selected>Sélectionner la voix</option>
+                          
+                        </select>
+                        <label>Choisissez une voix</label>
+                      </div>
+                    <br>
+
+                    <input type="text" name="" id="text" placeholder="saisissez votre texte ici">
+                    <button class="btn green darken-3" id="test_btn">tester</button>
+                </div>
+               
+            </div>
+        </div>
+
+        <script src="../js/sweetalert2.min.js"></script>
+        <script src="../js/select.js"></script>
+
+        <script type="text/javascript" src="../js/materialize.min.js"></script>
+
+        <script>
+            var test_btn = document.getElementById('test_btn')
+            var select1 = document.getElementById('sl')
+            var text = document.getElementById('text')
+
+            var tts = window.speechSynthesis;
+
+            $('#test_btn').on('click', function (){
+                
+                var input_txt = new SpeechSynthesisUtterance(text.value)
+                text.value = ""
+                var selected_voice_name = select1.selectedOptions[0].getAttribute('data-name')
+
+                voices.forEach((voice)=>{
+                    if(voice.name === selected_voice_name){
+                        input_txt.voice = voice       
+                        
+                    }
+                })
+                tts.speak(input_txt)
+
+            })
+
+            function populateVoiceList() {
+                if(typeof speechSynthesis === 'undefined') {
+                    return;
+                }
+
+                voices = speechSynthesis.getVoices();
+
+                for(i = 0; i < voices.length ; i++) {
+                    var option = document.createElement('option');
+                    option.textContent = voices[i].name + ' (' + voices[i].lang + ')';
+                    
+                    if(voices[i].default) {
+                    option.textContent += ' -- DEFAULT';
+                    }
+
+                    option.setAttribute('data-lang', voices[i].lang);
+                    option.setAttribute('data-name', voices[i].name);
+                    document.getElementById("sl").appendChild(option);
+                }
+                    }
+
+                populateVoiceList();
+                swal('Synthèse de voix', "les voix ont été correctement chargées", 'success')
+
+                if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = populateVoiceList;
+                }
+
+        </script>
+
+    </body>
+</html>
